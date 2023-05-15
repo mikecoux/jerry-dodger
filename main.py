@@ -7,11 +7,6 @@ from classes.enemy import Enemy
 from classes.button import Button
 # Import global vars
 import config
-# SQLAlchemy imports
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from classes.user import User
 
 # Initialize pygame
 pygame.init()
@@ -131,20 +126,6 @@ def play_game():
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()
 
-Base = declarative_base()
 
-if __name__ == 'main':
-    engine = create_engine("sqlite3:///jerry-dodger.db")
-    Base.metadata.create_all(engine)
-
-    # use our engine to configure a 'Session' class
-    Session = sessionmaker(bind=engine)
-    # use 'Session' class to create 'session' object
-    session = Session()
-
-    skier_mike = User(username = "Skier Mike")
-
-    session.add(skier_mike)
-    session.commit()
-
+# Starts the game :)
 main_menu()
