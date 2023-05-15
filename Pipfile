@@ -7,6 +7,7 @@ name = "pypi"
 sqlalchemy = "*"
 pygame = "*"
 alembic = "*"
+pygame-gui = "*"
 
 [dev-packages]
 

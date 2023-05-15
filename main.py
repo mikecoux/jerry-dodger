@@ -7,6 +7,7 @@ from classes.enemy import Enemy
 from classes.button import Button
 # Import global vars
 import config
+import pygame_gui
 
 # Initialize pygame
 pygame.init()
@@ -51,6 +52,46 @@ def main_menu():
             elif event.type == MOUSEBUTTONDOWN:
                 if play_button.check_for_input(menu_mouse_pos):
                     play_game()
+
+        pygame.display.flip()
+
+# Set your username
+def set_user():
+    pygame.display.set_caption("Add Username")
+    # Create the GUI manager
+    manager = pygame_gui.UIManager((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+
+    while True:
+        screen.fill((0, 0, 0))
+        menu_mouse_pos = pygame.mouse.get_pos()
+        user_text = config.get_font(50).render("Add skier name...", True, "#b68f40")
+        user_rect = user_text.get_rect(center=(640, 100))
+        #add user input
+
+        #add user input rect
+        submit_button = Button(image=pygame.image.load("assets/play-rect.png"), pos=(840, 250), text_input="SUBMIT",
+                               font=config.get_font(50), base_color="#d7fcd4", hovering_color="White")
+
+        #add blit
+
+        submit_button.change_color(menu_mouse_pos)
+        submit_button.update(screen)
+
+        # Look at every event in the queue
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == MOUSEBUTTONDOWN:
+                if submit_button.check_for_input(menu_mouse_pos):
+                    #push user to db
+                    #return to menu
+                    None
+            manager.process_events(event)
 
         pygame.display.flip()
 
