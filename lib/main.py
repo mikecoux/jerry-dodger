@@ -31,7 +31,7 @@ def main_menu():
         menu_rect = menu_text.get_rect(center=(640, 100))
 
         # Instantiate buttons
-        play_button = Button(image=pygame.image.load("assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
+        play_button = Button(image=pygame.image.load("./assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
                              font=config.get_font(75), base_color="#d7fcd4", hovering_color="White")
         
         # Draw the menu text on the screen
@@ -84,9 +84,9 @@ def set_user():
                 sys.exit()
             elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#username_input":
                 # Update the db
-                config.capture_user(event.text)
+                current_user = config.capture_user(event.text)
                 # Start the game!
-                play_game()
+                play_game(current_user)
             
             # Send the event to the gui manager??
             manager.process_events(event)
@@ -106,7 +106,7 @@ def set_user():
 # Set up the game loop
 # Game loop processes user input, updates state of game objs, updates display & audio output, maintains game speed
 # User input results in an event being generated. Events are placed in the event queue which then can be accessed & manipulated
-def play_game():
+def play_game(user):
     pygame.display.set_caption("Jerry Dodger")
 
     # Variable to keep the main loop running
@@ -183,7 +183,7 @@ def play_game():
         if pygame.sprite.spritecollideany(player, enemies):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
-            config.capture_score(game_score)
+            config.capture_score(game_score, user)
             running = False
             main_menu()
 

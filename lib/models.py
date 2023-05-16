@@ -19,9 +19,8 @@ class User(Base):
     scores = relationship("Score", backref="users")
 
     def __repr__(self):
-        return f"USER {self.id} - " \
-            + f"USERNAME: {self.username}, " \
-            + f"DATE: {self.init_date}"
+        return f"USER #{self.id} - " \
+            + f"username: {self.username}"
     
 class Score(Base):
     __tablename__ = 'scores'
@@ -32,6 +31,6 @@ class Score(Base):
     user_id = Column(Integer(), ForeignKey('users.id'))
 
     def __repr__(self):
-        return f"GAME {self.id} - " \
-        + f"SCORE: {self.score}, " \
-        + f"PLAYER: {self.user_id}"
+        return f"GAME #{self.id} - " \
+        + f"score: {self.score}, " \
+        + f"username: {self.user_id}"

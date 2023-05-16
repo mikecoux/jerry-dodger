@@ -1,4 +1,4 @@
-from lib.models import session
+from models import session
 
 def save_score(score):
     session.add(score)
