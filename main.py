@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
 # Create the main menu
 def main_menu():
-    pygame.display.set_caption("Menu")
+    pygame.display.set_caption("Main Menu")
 
     while True:
         # Fill the screen with black
@@ -59,7 +59,7 @@ def main_menu():
 
 # Set your username
 def set_user():
-    pygame.display.set_caption("Add Username")
+    pygame.display.set_caption("Create Username")
 
     # Create the GUI manager
     manager = pygame_gui.UIManager((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
@@ -107,6 +107,8 @@ def set_user():
 # Game loop processes user input, updates state of game objs, updates display & audio output, maintains game speed
 # User input results in an event being generated. Events are placed in the event queue which then can be accessed & manipulated
 def play_game():
+    pygame.display.set_caption("Jerry Dodger")
+
     # Variable to keep the main loop running
     running = True
 
@@ -115,7 +117,7 @@ def play_game():
 
     # Create a custom evens for adding a new enemy and adding to the score
     # Pygame defines events internally as integers, so you need to define a new event with a unique integer
-    # The last event pygame reserves is 'USEREVENT', so adding the '+ 1' ensures that it's unique
+    # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
     # .set_timer() creates a 'ADDENEMY' event at the specified interval
     ADDENEMY = pygame.USEREVENT + 0
     pygame.time.set_timer(ADDENEMY, 500)
@@ -181,12 +183,24 @@ def play_game():
         if pygame.sprite.spritecollideany(player, enemies):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
+            config.capture_score(game_score)
             running = False
             main_menu()
 
         # Update the display with .flip()
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()
+
+# Show the Game Over screen
+# def end_game():
+#     pygame.display.set_caption("Game Over")
+
+#     while True:
+#         screen.fill((0,0,0))
+#         # Draw text to the screen
+#         user_score_text = config.get_font(90).render("JERRY DODGER", True, "#b68f40")
+#         user_score_rect = menu_text.get_rect(center=(640, 100))
+
 
 
 # Starts the game :)
