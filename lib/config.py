@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 720
 
 # Returns Press-Start-2P in the desired size
 def get_font(size):
-    return pygame.font.Font("./assets/font.ttf", size)
+    return pygame.font.Font("../assets/font.ttf", size)
 
 # Move these two out of config??
 # Creates a user instance and sends to db

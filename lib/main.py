@@ -33,7 +33,7 @@ def main_menu():
         menu_rect = menu_text.get_rect(center=(640, 100))
 
         # Instantiate buttons
-        play_button = Button(image=pygame.image.load("./assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
+        play_button = Button(image=pygame.image.load("../assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
                              font=config.get_font(75), base_color="#d7fcd4", hovering_color="White")
         
         # Draw the menu text on the screen
