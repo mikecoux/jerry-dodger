@@ -5,9 +5,11 @@ from pygame.locals import (K_ESCAPE, KEYDOWN, MOUSEBUTTONDOWN, QUIT)
 from classes.player import Player
 from classes.enemy import Enemy
 from classes.button import Button
+from classes.top_score import Top_Score
 # Import global vars
 import config
 import pygame_gui
+from score import get_top_scores
 
 # Initialize pygame
 pygame.init()
@@ -17,7 +19,7 @@ screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
 # Create the main menu
 def main_menu():
-    pygame.display.set_caption("Menu")
+    pygame.display.set_caption("Main Menu")
 
     while True:
         # Fill the screen with black
@@ -31,7 +33,7 @@ def main_menu():
         menu_rect = menu_text.get_rect(center=(640, 100))
 
         # Instantiate buttons
-        play_button = Button(image=pygame.image.load("assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
+        play_button = Button(image=pygame.image.load("./assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
                              font=config.get_font(75), base_color="#d7fcd4", hovering_color="White")
         
         # Draw the menu text on the screen
@@ -59,13 +61,13 @@ def main_menu():
 
 # Set your username
 def set_user():
-    pygame.display.set_caption("Add Username")
+    pygame.display.set_caption("Create Username")
 
     # Create the GUI manager
     manager = pygame_gui.UIManager((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
     # Create the clock??
     clock = pygame.time.Clock()
-    # Create the text input
+    # Create the text input. Why not accessed??
     text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((250, 360), (500, 50)), 
                                                     manager=manager, object_id="#username_input")
 
@@ -84,9 +86,9 @@ def set_user():
                 sys.exit()
             elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#username_input":
                 # Update the db
-                config.capture_user(event.text)
+                current_user = config.capture_user(event.text)
                 # Start the game!
-                play_game()
+                play_game(current_user)
             
             # Send the event to the gui manager??
             manager.process_events(event)
@@ -106,7 +108,9 @@ def set_user():
 # Set up the game loop
 # Game loop processes user input, updates state of game objs, updates display & audio output, maintains game speed
 # User input results in an event being generated. Events are placed in the event queue which then can be accessed & manipulated
-def play_game():
+def play_game(user):
+    pygame.display.set_caption("Jerry Dodger")
+
     # Variable to keep the main loop running
     running = True
 
@@ -115,7 +119,7 @@ def play_game():
 
     # Create a custom evens for adding a new enemy and adding to the score
     # Pygame defines events internally as integers, so you need to define a new event with a unique integer
-    # The last event pygame reserves is 'USEREVENT', so adding the '+ 1' ensures that it's unique
+    # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
     # .set_timer() creates a 'ADDENEMY' event at the specified interval
     ADDENEMY = pygame.USEREVENT + 0
     pygame.time.set_timer(ADDENEMY, 500)
@@ -181,12 +185,56 @@ def play_game():
         if pygame.sprite.spritecollideany(player, enemies):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
+            config.capture_score(game_score, user)
             running = False
-            main_menu()
+            end_game(user, game_score)
 
         # Update the display with .flip()
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()
+
+# Show the Game Over screen
+def end_game(user, game_score):
+    pygame.display.set_caption("Game Over")
+
+    scores = get_top_scores(user.id)
+    pos_x = 640
+    pos_y = 360
+    print(scores)
+
+    while True:
+        screen.fill((0,0,0))
+
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Create game over text
+        game_over_text = config.get_font(90).render("GAME OVER", True, "#b68f40")
+        game_over_rect = game_over_text.get_rect(center=(640, 100))
+
+        # Draw the game over text on the screen
+        screen.blit(game_over_text, game_over_rect)
+
+        your_score_text = config.get_font(40).render(f"YOUR SCORE: {game_score}", True, "#b68f40")
+        your_score_rect = your_score_text.get_rect(center=(640, 250))
+        screen.blit(your_score_text, your_score_rect)
+
+        # Draw the top 5 scores
+        for score in scores:
+            new_score = Top_Score(pos=(pos_x, pos_y), score_input=score.score,
+                                  font=config.get_font(20), color="White")
+            new_score.update(screen)
+            pos_y += 30
+        
+        pygame.display.flip()
+
+
 
 
 # Starts the game :)
