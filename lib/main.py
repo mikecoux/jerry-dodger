@@ -5,9 +5,11 @@ from pygame.locals import (K_ESCAPE, KEYDOWN, MOUSEBUTTONDOWN, QUIT)
 from classes.player import Player
 from classes.enemy import Enemy
 from classes.button import Button
+from classes.top_score import Top_Score
 # Import global vars
 import config
 import pygame_gui
+from score import get_top_scores
 
 # Initialize pygame
 pygame.init()
@@ -65,7 +67,7 @@ def set_user():
     manager = pygame_gui.UIManager((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
     # Create the clock??
     clock = pygame.time.Clock()
-    # Create the text input
+    # Create the text input. Why not accessed??
     text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((250, 360), (500, 50)), 
                                                     manager=manager, object_id="#username_input")
 
@@ -185,21 +187,53 @@ def play_game(user):
             player.kill()
             config.capture_score(game_score, user)
             running = False
-            main_menu()
+            end_game(user, game_score)
 
         # Update the display with .flip()
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()
 
 # Show the Game Over screen
-# def end_game():
-#     pygame.display.set_caption("Game Over")
+def end_game(user, game_score):
+    pygame.display.set_caption("Game Over")
 
-#     while True:
-#         screen.fill((0,0,0))
-#         # Draw text to the screen
-#         user_score_text = config.get_font(90).render("JERRY DODGER", True, "#b68f40")
-#         user_score_rect = menu_text.get_rect(center=(640, 100))
+    scores = get_top_scores(user.id)
+    pos_x = 640
+    pos_y = 360
+    print(scores)
+
+    while True:
+        screen.fill((0,0,0))
+
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Create game over text
+        game_over_text = config.get_font(90).render("GAME OVER", True, "#b68f40")
+        game_over_rect = game_over_text.get_rect(center=(640, 100))
+
+        # Draw the game over text on the screen
+        screen.blit(game_over_text, game_over_rect)
+
+        your_score_text = config.get_font(40).render(f"YOUR SCORE: {game_score}", True, "#b68f40")
+        your_score_rect = your_score_text.get_rect(center=(640, 250))
+        screen.blit(your_score_text, your_score_rect)
+
+        # Draw the top 5 scores
+        for score in scores:
+            new_score = Top_Score(pos=(pos_x, pos_y), score_input=score.score,
+                                  font=config.get_font(20), color="White")
+            new_score.update(screen)
+            pos_y += 30
+        
+        pygame.display.flip()
+
 
 
 

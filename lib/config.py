@@ -11,6 +11,7 @@ SCREEN_HEIGHT = 720
 def get_font(size):
     return pygame.font.Font("./assets/font.ttf", size)
 
+# Move these two out of config??
 # Creates a user instance and sends to db
 def capture_user(new_username):
     if new_username in [user.username for user in get_all_users()]:
