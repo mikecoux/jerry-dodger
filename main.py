@@ -51,33 +51,27 @@ def main_menu():
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if play_button.check_for_input(menu_mouse_pos):
-                    play_game()
+                    set_user()
 
         pygame.display.flip()
 
 # Set your username
 def set_user():
     pygame.display.set_caption("Add Username")
+
     # Create the GUI manager
     manager = pygame_gui.UIManager((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+    # Create the clock??
+    clock = pygame.time.Clock()
+    # Create the text input
+    text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((250, 360), (500, 50)), 
+                                                    manager=manager, object_id="#username_input")
 
     while True:
-        screen.fill((0, 0, 0))
-        menu_mouse_pos = pygame.mouse.get_pos()
-        user_text = config.get_font(50).render("Add skier name...", True, "#b68f40")
-        user_rect = user_text.get_rect(center=(640, 100))
-        #add user input
+        # Sets the cursor refresh rate??
+        ui_refresh_rate = clock.tick(60)/1000
 
-        #add user input rect
-        submit_button = Button(image=pygame.image.load("assets/play-rect.png"), pos=(840, 250), text_input="SUBMIT",
-                               font=config.get_font(50), base_color="#d7fcd4", hovering_color="White")
-
-        #add blit
-
-        submit_button.change_color(menu_mouse_pos)
-        submit_button.update(screen)
-
-        # Look at every event in the queue
+        # ??
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -86,13 +80,25 @@ def set_user():
             elif event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == MOUSEBUTTONDOWN:
-                if submit_button.check_for_input(menu_mouse_pos):
-                    #push user to db
-                    #return to menu
-                    None
+            elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#username_input":
+                # Update the db
+                config.capture_user(event.text)
+                # Start the game!
+                play_game()
+            
+            # Send the event to the gui manager??
             manager.process_events(event)
+        
+        #??
+        manager.update(ui_refresh_rate)
 
+        # Set the screen to black
+        screen.fill((0, 0, 0))
+
+        # ??
+        manager.draw_ui(screen)
+
+        # Load the content
         pygame.display.flip()
 
 # Set up the game loop
