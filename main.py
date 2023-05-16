@@ -34,10 +34,12 @@ def main_menu():
         play_button = Button(image=pygame.image.load("assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
                              font=config.get_font(75), base_color="#d7fcd4", hovering_color="White")
         
+        # Draw the menu text on the screen
         screen.blit(menu_text, menu_rect)
 
         # Run the button methods
         play_button.change_color(menu_mouse_pos)
+        # Draw the button on the screen
         play_button.update(screen)
 
         # Look at every event in the queue
@@ -108,12 +110,17 @@ def play_game():
     # Variable to keep the main loop running
     running = True
 
-    # Create a custom event for adding a new enemy
+    # Variable to track the score
+    game_score = 0
+
+    # Create a custom evens for adding a new enemy and adding to the score
     # Pygame defines events internally as integers, so you need to define a new event with a unique integer
-    # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
+    # The last event pygame reserves is 'USEREVENT', so adding the '+ 1' ensures that it's unique
     # .set_timer() creates a 'ADDENEMY' event at the specified interval
-    ADDENEMY = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDENEMY, 1000)
+    ADDENEMY = pygame.USEREVENT + 0
+    pygame.time.set_timer(ADDENEMY, 500)
+    ADDSCORE = pygame.USEREVENT + 1
+    pygame.time.set_timer(ADDSCORE, 1000)
 
     # Instantiate player sprite
     player = Player()
@@ -139,6 +146,9 @@ def play_game():
                 new_enemy = Enemy()
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
+            # Add to the game score every second
+            elif event.type == ADDSCORE:
+                game_score += 1
 
         # Get the set of keys pressed and check for user input
         # .get_pressed() returns a dict containing all the current keydown events in the queue
@@ -154,7 +164,12 @@ def play_game():
         # Fill the screen with black
         screen.fill((0, 0, 0))
 
-        # Draw the player on the screen with .blit()
+        # Draw score on the screen
+        score_text = config.get_font(20).render(f"Score: {game_score}", True, "White")
+        score_rect = score_text.get_rect(center=(100, 20))
+        screen.blit(score_text, score_rect)
+
+        # Draw the sprites on the screen with .blit()
         # .blit() stands for 'block transfer'. You can use to to copy the surface onto another one (e.g. the original screen)
         # .blit() takes two args: 1. the surface to draw 2. the location at which to draw on the source surface
         # Draw all sprites: any sprite in the group will be 'drawn' with every frame
