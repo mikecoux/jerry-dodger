@@ -184,7 +184,7 @@ def play_game(user):
         # .spritecollideany() method accepts a sprite and group as parameters
         # looks at every object in the group to see if its '.rect' intersects with the '.rect' of the sprite. If so, returns TRUE
         # Takes a callback function that determines the ratio of overlap that would determine a collision
-        if pygame.sprite.spritecollideany(player, enemies, pygame.sprite.collide_rect_ratio(0.7)):
+        if pygame.sprite.spritecollideany(player, enemies, pygame.sprite.collide_rect_ratio(0.9)):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
             capture_score(game_score, user)
