@@ -1,6 +1,11 @@
 from models import session, Score
-from sqlalchemy import desc
 
+# Creates a score instance
+def capture_score(new_score, user):
+    new_score = Score(score = new_score, user_id = user.id)
+    save_score(new_score)
+
+# Saves score to score db
 def save_score(score):
     session.add(score)
     session.commit()

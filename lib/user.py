@@ -1,9 +1,12 @@
-from models import session, Base, engine, User
-from sqlalchemy.orm import sessionmaker
+from models import session, User
 
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
+def capture_user(new_username):
+    if new_username in [user.username for user in get_all_users()]:
+        return get_user_by_name(new_username)
+    else:
+        new_user = User(username = new_username)
+        save_user(new_user)
+        return new_user
 
 def save_user(user):
     session.add(user)

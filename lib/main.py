@@ -1,15 +1,15 @@
 # Import pygame and pygmame.locals for easier access to key coordinates
-import pygame, sys
+import pygame, sys, pygame_gui
 from pygame.locals import (K_ESCAPE, KEYDOWN, MOUSEBUTTONDOWN, QUIT)
-# Import player and enemy classes
+# Import classes
 from classes.player import Player
 from classes.enemy import Enemy
 from classes.button import Button
 from classes.top_score import Top_Score
-# Import global vars
+# Import global vars and CRUD methods
 import config
-import pygame_gui
-from score import get_top_scores
+from score import get_top_scores, capture_score
+from user import capture_user
 
 # Initialize pygame
 pygame.init()
@@ -86,7 +86,7 @@ def set_user():
                 sys.exit()
             elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#username_input":
                 # Update the db
-                current_user = config.capture_user(event.text)
+                current_user = capture_user(event.text)
                 # Start the game!
                 play_game(current_user)
             
@@ -185,7 +185,7 @@ def play_game(user):
         if pygame.sprite.spritecollideany(player, enemies):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
-            config.capture_score(game_score, user)
+            capture_score(game_score, user)
             running = False
             end_game(user, game_score)
 
@@ -232,8 +232,6 @@ def end_game(user, game_score):
             pos_y += 30
         
         pygame.display.flip()
-
-
 
 
 # Starts the game :)
