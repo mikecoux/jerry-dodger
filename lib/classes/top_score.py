@@ -5,7 +5,7 @@ class Top_Score():
         self.font = font
         self.color = color
         self.score_input = score_input
-        self.text = self.font.render(self.score_input, True, self.color)
+        self.text = self.font.render(str(self.score_input), True, self.color)
         self.rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
     def update(self, screen):

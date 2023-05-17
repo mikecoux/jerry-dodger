@@ -1,8 +1,8 @@
-"""Added user and score models
+"""First migration
 
-Revision ID: 17b04ec6ba28
+Revision ID: aaae751e092a
 Revises: 
-Create Date: 2023-05-16 12:46:22.298185
+Create Date: 2023-05-16 17:03:34.753898
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '17b04ec6ba28'
+revision = 'aaae751e092a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,7 +27,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=False)
     op.create_table('scores',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('score', sa.String(), nullable=True),
+    sa.Column('score', sa.Integer(), nullable=True),
     sa.Column('game_date', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),

@@ -197,11 +197,6 @@ def play_game(user):
 def end_game(user, game_score):
     pygame.display.set_caption("Game Over")
 
-    scores = get_top_scores(user.id)
-    pos_x = 640
-    pos_y = 360
-    print(scores)
-
     while True:
         screen.fill((0,0,0))
 
@@ -226,6 +221,10 @@ def end_game(user, game_score):
         screen.blit(your_score_text, your_score_rect)
 
         # Draw the top 5 scores
+        scores = get_top_scores(user.id)
+        pos_x = 640
+        pos_y = 360
+
         for score in scores:
             new_score = Top_Score(pos=(pos_x, pos_y), score_input=score.score,
                                   font=config.get_font(20), color="White")

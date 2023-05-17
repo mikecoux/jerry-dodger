@@ -26,7 +26,7 @@ class Score(Base):
     __tablename__ = 'scores'
 
     id = Column(Integer(), primary_key=True)
-    score = Column(String())
+    score = Column(Integer())
     game_date = Column(DateTime(), default=datetime.now())
     user_id = Column(Integer(), ForeignKey('users.id'))
 
