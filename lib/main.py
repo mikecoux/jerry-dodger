@@ -65,7 +65,7 @@ def set_user():
 
     # Create the GUI manager
     manager = pygame_gui.UIManager((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-    # Create the clock??
+    # Create the clock to control the framerate
     clock = pygame.time.Clock()
     # Create the text input. Why not accessed??
     text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((250, 360), (500, 50)), 
@@ -110,6 +110,7 @@ def set_user():
 # User input results in an event being generated. Events are placed in the event queue which then can be accessed & manipulated
 def play_game(user):
     pygame.display.set_caption("Jerry Dodger")
+    clock = pygame.time.Clock()
 
     # Variable to keep the main loop running
     running = True
@@ -122,7 +123,7 @@ def play_game(user):
     # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
     # .set_timer() creates a 'ADDENEMY' event at the specified interval
     ADDENEMY = pygame.USEREVENT + 0
-    pygame.time.set_timer(ADDENEMY, 500)
+    pygame.time.set_timer(ADDENEMY, 2000)
     ADDSCORE = pygame.USEREVENT + 1
     pygame.time.set_timer(ADDSCORE, 1000)
 
@@ -166,7 +167,7 @@ def play_game(user):
 
         # Surface allows you to 'draw' to the screen
         # Fill the screen with black
-        screen.fill((0, 0, 0))
+        screen.fill((0,0,0))
 
         # Draw score on the screen
         score_text = config.get_font(20).render(f"Score: {game_score}", True, "White")
@@ -182,7 +183,8 @@ def play_game(user):
 
         # .spritecollideany() method accepts a sprite and group as parameters
         # looks at every object in the group to see if its '.rect' intersects with the '.rect' of the sprite. If so, returns TRUE
-        if pygame.sprite.spritecollideany(player, enemies):
+        # Takes a callback function that determines the ratio of overlap that would determine a collision
+        if pygame.sprite.spritecollideany(player, enemies, pygame.sprite.collide_rect_ratio(0.7)):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
             capture_score(game_score, user)
@@ -192,6 +194,9 @@ def play_game(user):
         # Update the display with .flip()
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()
+
+        # Ensure program maintains a rate of 30 frames per second
+        clock.tick(30)
 
 # Show the Game Over screen
 def end_game(user, game_score):

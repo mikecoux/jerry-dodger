@@ -1,16 +1,23 @@
 import pygame
+from pygame.locals import RLEACCEL
 import random
 import sys
 sys.path.append('..')
 import config
+
+tree_img = pygame.image.load("../assets/snowy-tree.png")
+jerry_img = pygame.image.load("../assets/jerry.png")
+enemy_img = [tree_img, jerry_img]
+
 
 # Define the enemy object by extending pygame.sprite.Sprite
 # The surface you draw on the screen is now an attribute of 'enemy'
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
-        self.surf = pygame.Surface((20, 10))
-        self.surf.fill((255, 255, 255))
+        self.surf = random.choice(enemy_img).convert()
+        self.surf.set_colorkey((0,0,0), RLEACCEL)
+
         # Updates rect to be a random location along the right side of the screen
         # The center is off the screen, located between 20 and 100 px off the right edge and between the top and bottom edges
         self.rect = self.surf.get_rect(
@@ -20,7 +27,7 @@ class Enemy(pygame.sprite.Sprite):
             )
         )
         # Set speed to a random number between specified values
-        self.speed = random.randint(1, 3)
+        self.speed = random.randint(5, 20)
 
     # update() takes no arguments because the movement is automatic
     # Remove the sprite when it passes the left edge of the screen with .kil()
