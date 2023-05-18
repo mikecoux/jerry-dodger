@@ -6,10 +6,12 @@ from classes.player import Player
 from classes.enemy import Enemy
 from classes.button import Button
 from classes.top_score import Top_Score
+from classes.steeze import Steeze
 # Import global vars and CRUD methods
 import config
 from score import get_top_scores, capture_score
 from user import capture_user
+# from trick import capture_tricks
 
 # Initialize pygame
 pygame.init()
@@ -118,22 +120,28 @@ def play_game(user):
     # Variable to track the score
     game_score = 0
 
-    # Create a custom evens for adding a new enemy and adding to the score
+    # Variable to track the encountered steezes
+    steeze_bag = []
+
+    # Create a custom events
     # Pygame defines events internally as integers, so you need to define a new event with a unique integer
     # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
-    # .set_timer() creates a 'ADDENEMY' event at the specified interval
+    # .set_timer() creates the event at the specified interval
     ADDENEMY = pygame.USEREVENT + 0
     pygame.time.set_timer(ADDENEMY, 2000)
     ADDSCORE = pygame.USEREVENT + 1
     pygame.time.set_timer(ADDSCORE, 1000)
+    ADDSTEEZE = pygame.USEREVENT + 2
+    pygame.time.set_timer(ADDSTEEZE, 5000)
 
     # Instantiate player sprite
     player = Player()
 
-    # Create groups to hold enemy sprites and all sprites
+    # Create groups to hold enemy sprites and friendly steezes
     # - enemies is used for collision detection and position updates
     # - all_sprites is used for rendering
     enemies = pygame.sprite.Group()
+    steezes = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
 
@@ -143,9 +151,11 @@ def play_game(user):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    running = False
+                    pygame.quit()
+                    sys.exit()
             elif event.type == QUIT:
-                running = False
+                pygame.quit()
+                sys.exit()
             # Instantiate new enemies and add them to the enemy group
             elif event.type == ADDENEMY:
                 new_enemy = Enemy()
@@ -154,13 +164,18 @@ def play_game(user):
             # Add to the game score every second
             elif event.type == ADDSCORE:
                 game_score += 1
+            elif event.type == ADDSTEEZE:
+                new_steeze = Steeze(steeze_input="360", font=config.get_font(20), color="#b68f40")
+                steezes.add(new_steeze)
+                all_sprites.add(new_steeze)
 
         # Get the set of keys pressed and check for user input
         # .get_pressed() returns a dict containing all the current keydown events in the queue
         pressed_keys = pygame.key.get_pressed()
 
-        # Update enemy positions via the enemy group
+        # Update sprite positions via their respective groups
         enemies.update()
+        steezes.update()
 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
@@ -184,13 +199,19 @@ def play_game(user):
         # .spritecollideany() method accepts a sprite and group as parameters
         # looks at every object in the group to see if its '.rect' intersects with the '.rect' of the sprite. If so, returns TRUE
         # Takes a callback function that determines the ratio of overlap that would determine a collision
+        # might want to use pygame.sprite.collide_mask
         if pygame.sprite.spritecollideany(player, enemies, pygame.sprite.collide_rect_ratio(0.9)):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
             capture_score(game_score, user)
+            # capture tricks
             running = False
             end_game(user, game_score)
-
+        elif pygame.sprite.spritecollideany(player, steezes):
+            for steeze in pygame.sprite.spritecollide(player, steezes, False):
+                print(steeze.steeze_input)
+                steeze.kill()
+                
         # Update the display with .flip()
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()

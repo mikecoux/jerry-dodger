@@ -17,6 +17,8 @@ class Enemy(pygame.sprite.Sprite):
         super(Enemy, self).__init__()
         self.surf = random.choice(enemy_img).convert()
         self.surf.set_colorkey((0,0,0), RLEACCEL)
+        # allows you to create pixel perfect masks
+        # self.image = pygame.image.load("ball_64.png").convert_alpha()
 
         # Updates rect to be a random location along the right side of the screen
         # The center is off the screen, located between 20 and 100 px off the right edge and between the top and bottom edges
@@ -28,6 +30,8 @@ class Enemy(pygame.sprite.Sprite):
         )
         # Set speed to a random number between specified values
         self.speed = random.randint(5, 20)
+        # self.mask  = pygame.mask.from_surface(self.surf)
+
 
     # update() takes no arguments because the movement is automatic
     # Remove the sprite when it passes the left edge of the screen with .kil()

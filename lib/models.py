@@ -17,6 +17,7 @@ class User(Base):
     username = Column(String(), index=True)
     init_date = Column(DateTime(), default=datetime.now())
     scores = relationship("Score", backref="users")
+    tricks = relationship("Trick", backref="users")
 
     def __repr__(self):
         return f"USER #{self.id} - " \
@@ -29,8 +30,17 @@ class Score(Base):
     score = Column(Integer())
     game_date = Column(DateTime(), default=datetime.now())
     user_id = Column(Integer(), ForeignKey('users.id'))
+    tricks = relationship("Trick", backref="scores")
 
     def __repr__(self):
         return f"GAME #{self.id} - " \
         + f"score: {self.score}, " \
-        + f"username: {self.user_id}"
+        + f"user ID: {self.user_id}"
+    
+class Trick(Base):
+    __tablename__ = 'tricks'
+
+    id = Column(Integer(), primary_key=True)
+    steeze = Column(String())
+    user_id = Column(Integer(), ForeignKey('users.id'))
+    game_id = Column(Integer(), ForeignKey('scores.id'))

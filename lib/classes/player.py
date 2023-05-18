@@ -16,6 +16,7 @@ class Player(pygame.sprite.Sprite):
         # Color key sets which color pixels will be transparent against the background
         self.surf.set_colorkey((0,0,0), RLEACCEL)
         self.rect = self.surf.get_rect()
+        # self.mask  = pygame.mask.from_surface(self.surf)
 
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
