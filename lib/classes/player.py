@@ -8,26 +8,40 @@ import config
 # Sprites are a 2D representation of something on the screen. Essentially, a picture.
 # Pygame provides a sprite class, we create a new class that extends Sprite giving it access to the built in methods
 # The surface drawn on the screen is now an attribute of 'player'
+
+player_imgs = [pygame.image.load("../assets/skier-mike.png"), pygame.image.load("../assets/skier-mike-skiing.png")]
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         #Super keyword gives the instance all the props of the parent
         super(Player, self).__init__()
-        self.surf = pygame.image.load("../assets/skier-mike.png").convert()
+        self.surf = player_imgs[0].convert()
         # Color key sets which color pixels will be transparent against the background
         self.surf.set_colorkey((0,0,0), RLEACCEL)
         self.rect = self.surf.get_rect()
-        # self.mask  = pygame.mask.from_surface(self.surf)
+        # self.mask  = pygame.mask.from_surface(self.surf)     
 
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
-        if pressed_keys[K_DOWN]:
+            self.surf = player_imgs[1].convert()
+            self.surf.set_colorkey((0,0,0), RLEACCEL)
+        elif pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
-        if pressed_keys[K_LEFT]:
+            self.surf = player_imgs[1].convert()
+            self.surf.set_colorkey((0,0,0), RLEACCEL)
+        elif pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
-        if pressed_keys[K_RIGHT]:
+            self.surf = player_imgs[1].convert()
+            self.surf.set_colorkey((0,0,0), RLEACCEL)
+        elif pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
+            self.surf = player_imgs[1].convert()
+            self.surf.set_colorkey((0,0,0), RLEACCEL)
+        else:
+            self.surf = player_imgs[0].convert()
+            self.surf.set_colorkey((0,0,0), RLEACCEL)
     
         # Keep player on the screen
         if self.rect.left < 0:
