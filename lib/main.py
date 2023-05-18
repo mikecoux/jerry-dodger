@@ -35,11 +35,21 @@ def main_menu():
         menu_rect = menu_text.get_rect(center=(640, 100))
 
         # Instantiate buttons
-        play_button = Button(image=pygame.image.load("../assets/play-rect.png"), pos=(640, 250), text_input="PLAY",
+        play_button = Button(image=pygame.image.load("../assets/play-rect.png"), pos=(640, 360), text_input="PLAY",
                              font=config.get_font(75), base_color="#d7fcd4", hovering_color="White")
         
         # Draw the menu text on the screen
         screen.blit(menu_text, menu_rect)
+
+        # Draw the skier and jerry images on the screen
+        skier_img = pygame.image.load("../assets/skier-mike-big.png")
+        skier_rect = skier_img.get_rect(center=(200, 360))
+        screen.blit(skier_img, skier_rect)
+
+        jerry_img = pygame.image.load("../assets/jerry-big.png")
+        jerry_rect = jerry_img.get_rect(center=(1080, 360))
+        screen.blit(jerry_img, jerry_rect)
+
 
         # Run the button methods
         play_button.change_color(menu_mouse_pos)
@@ -248,15 +258,6 @@ def end_game(user, game_score):
     while True:
         screen.fill((0,0,0))
 
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-            elif event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-
         # Create game over text
         game_over_text = config.get_font(90).render("GAME OVER", True, "#b68f40")
         game_over_rect = game_over_text.get_rect(center=(640, 100))
@@ -278,6 +279,27 @@ def end_game(user, game_score):
                                   font=config.get_font(20), color="White")
             new_score.update(screen)
             pos_y += 30
+
+        # Capture the mouse position
+        mouse_pos = pygame.mouse.get_pos()
+
+        # Draw the play again button
+        play_again_button = Button(image=pygame.image.load("../assets/play-rect.png"), pos=(1050, 620), text_input="PLAY AGAIN",
+                                   font=config.get_font(30), base_color="#d7fcd4", hovering_color="White")
+        play_again_button.change_color(mouse_pos)
+        play_again_button.update(screen)
+
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == MOUSEBUTTONDOWN:
+                if play_again_button.check_for_input(mouse_pos):
+                    play_game(user)
         
         pygame.display.flip()
 
