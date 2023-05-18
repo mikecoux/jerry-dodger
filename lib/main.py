@@ -1,6 +1,6 @@
 # Import pygame and pygmame.locals for easier access to key coordinates
 import pygame, sys, pygame_gui
-from pygame.locals import (K_ESCAPE, KEYDOWN, MOUSEBUTTONDOWN, QUIT)
+from pygame.locals import (K_ESCAPE, K_SPACE, KEYDOWN, MOUSEBUTTONDOWN, QUIT)
 # Import classes
 from classes.player import Player
 from classes.enemy import Enemy
@@ -9,9 +9,9 @@ from classes.top_score import Top_Score
 from classes.steeze import Steeze
 # Import global vars and CRUD methods
 import config
-from score import get_top_scores, capture_score
+from score import get_top_scores, capture_score, get_last_score
 from user import capture_user
-# from trick import capture_tricks
+from trick import capture_tricks
 
 # Initialize pygame
 pygame.init()
@@ -123,6 +123,9 @@ def play_game(user):
     # Variable to track the encountered steezes
     steeze_bag = []
 
+    # Variable to track the steezes sent
+    steezes_bagged = []
+
     # Create a custom events
     # Pygame defines events internally as integers, so you need to define a new event with a unique integer
     # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
@@ -151,8 +154,20 @@ def play_game(user):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    running = False
+                    main_menu()
+                elif event.key == K_SPACE:
+                    if steeze_bag:
+                        match steeze_bag[0]:
+                            case '360':
+                                game_score += 5
+                                steezes_bagged.append('360')
+                                steeze_bag.pop(0)
+                            case '720':
+                                game_score += 10
+                                steeze_bag.pop(0)
+                            case _:
+                                pass
             elif event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -189,6 +204,11 @@ def play_game(user):
         score_rect = score_text.get_rect(center=(100, 20))
         screen.blit(score_text, score_rect)
 
+        # Draw the steeze bag on the screen
+        steeze_bag_text = config.get_font(20).render(f"Steeze Bag: {' '.join(steeze_bag)}", True, "White")
+        steeze_bag_rect = steeze_bag_text.get_rect(center=(640, 700))
+        screen.blit(steeze_bag_text, steeze_bag_rect)
+
         # Draw the sprites on the screen with .blit()
         # .blit() stands for 'block transfer'. You can use to to copy the surface onto another one (e.g. the original screen)
         # .blit() takes two args: 1. the surface to draw 2. the location at which to draw on the source surface
@@ -204,14 +224,16 @@ def play_game(user):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
             capture_score(game_score, user)
-            # capture tricks
+            # possibly insert 'await' here
+            capture_tricks(steezes_bagged, user, get_last_score())
             running = False
             end_game(user, game_score)
         elif pygame.sprite.spritecollideany(player, steezes):
-            for steeze in pygame.sprite.spritecollide(player, steezes, False):
-                print(steeze.steeze_input)
-                steeze.kill()
-                
+            if len(steeze_bag) < 3:
+                for steeze in pygame.sprite.spritecollide(player, steezes, False):                
+                    steeze_bag.append(steeze.steeze_input)
+                    steeze.kill()
+
         # Update the display with .flip()
         # .flip() updates the screen with everything that's been drawn since the last .flip()
         pygame.display.flip()

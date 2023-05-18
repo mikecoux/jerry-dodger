@@ -18,3 +18,8 @@ def get_top_scores(id):
         Score.user_id == id).order_by(
         Score.score.desc()).limit(
         5).all()
+
+def get_last_score():
+    return session.query(
+        Score).order_by(
+        Score.id.desc()).first()

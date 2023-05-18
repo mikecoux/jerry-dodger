@@ -25,7 +25,3 @@ class Steeze(pygame.sprite.Sprite):
         self.rect.move_ip(-self.speed, 0)
         if self.rect.right < 0:
             self.kill()
-
-    # # Returns the steeze input value when called (e.g. after collision with player)
-    # def reveal(self):
-    #     return self.steeze_input
