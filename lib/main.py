@@ -80,7 +80,7 @@ def set_user():
     # Create the clock to control the framerate
     clock = pygame.time.Clock()
     # Create the text input. Why not accessed??
-    text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((250, 360), (500, 50)), 
+    text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((405, 360), (460, 50)), 
                                                     manager=manager, object_id="#username_input")
 
     while True:
@@ -114,6 +114,11 @@ def set_user():
         # ??
         manager.draw_ui(screen)
 
+        # Draw the username prompt
+        user_text = config.get_font(30).render(f"Enter username:", True, "#b68f40")
+        user_rect = user_text.get_rect(center=(640, 250))
+        screen.blit(user_text, user_rect)
+
         # Load the content
         pygame.display.flip()
 
@@ -140,11 +145,22 @@ def play_game(user):
     # Pygame defines events internally as integers, so you need to define a new event with a unique integer
     # The last event pygame reserves is 'USEREVENT', so adding the '+1' ensures that it's unique
     # .set_timer() creates the event at the specified interval
+    # Spawn an enemy every two seconds
     ADDENEMY = pygame.USEREVENT + 0
-    pygame.time.set_timer(ADDENEMY, 2000)
-    ADDSCORE = pygame.USEREVENT + 1
+    spawn_enemy_timer = 2000
+    pygame.time.set_timer(ADDENEMY, spawn_enemy_timer)
+
+    # Create an event to increase the enemy spawn rate every five seconds
+    REDUCETIMER = pygame.USEREVENT + 1
+    REDUCETIMERTIMER = 5000
+    pygame.time.set_timer(REDUCETIMER, REDUCETIMERTIMER)
+
+    # Increase the game score every second
+    ADDSCORE = pygame.USEREVENT + 2
     pygame.time.set_timer(ADDSCORE, 1000)
-    ADDSTEEZE = pygame.USEREVENT + 2
+
+    # Spawn a trick every five seconds
+    ADDSTEEZE = pygame.USEREVENT + 3
     pygame.time.set_timer(ADDSTEEZE, 5000)
 
     # Instantiate player sprite
@@ -186,9 +202,19 @@ def play_game(user):
                 new_enemy = Enemy()
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
+            # Increase the enemy spawn rate
+            elif event.type == REDUCETIMER:
+                # Cancels out the previous enemy spawn event. Necessary??
+                pygame.time.set_timer(ADDENEMY, 0)
+                spawn_enemy_timer -= 200
+                # Keeps rate above 200 milliseconds
+                if spawn_enemy_timer <= 200:
+                    spawn_enemy_timer = 200
+                pygame.time.set_timer(ADDENEMY, spawn_enemy_timer)
             # Add to the game score every second
             elif event.type == ADDSCORE:
                 game_score += 1
+            # Create new steezes
             elif event.type == ADDSTEEZE:
                 new_steeze = Steeze(steeze_input="360", font=config.get_font(20), color="#b68f40")
                 steezes.add(new_steeze)
@@ -266,13 +292,17 @@ def end_game(user, game_score):
         screen.blit(game_over_text, game_over_rect)
 
         your_score_text = config.get_font(40).render(f"YOUR SCORE: {game_score}", True, "#b68f40")
-        your_score_rect = your_score_text.get_rect(center=(640, 250))
+        your_score_rect = your_score_text.get_rect(center=(640, 230))
         screen.blit(your_score_text, your_score_rect)
 
         # Draw the top 5 scores
         scores = get_top_scores(user.id)
         pos_x = 640
-        pos_y = 360
+        pos_y = 370
+
+        top_scores_text = config.get_font(20).render(f"Top scores for {user.username}:", True, "White")
+        top_scores_rect = top_scores_text.get_rect(center=(640, 330))
+        screen.blit(top_scores_text, top_scores_rect)
 
         for score in scores:
             new_score = Top_Score(pos=(pos_x, pos_y), score_input=score.score,

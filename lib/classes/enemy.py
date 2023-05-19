@@ -29,7 +29,7 @@ class Enemy(pygame.sprite.Sprite):
             )
         )
         # Set speed to a random number between specified values
-        self.speed = random.randint(5, 20)
+        self.speed = random.randint(5, 10)
         # self.mask  = pygame.mask.from_surface(self.surf)
 
 
