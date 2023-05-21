@@ -32,10 +32,10 @@ def main_menu():
 
         # Draw text to the screen
         menu_text = config.get_font(90).render("JERRY DODGER", True, "#b68f40")
-        menu_rect = menu_text.get_rect(center=(640, 100))
+        menu_rect = menu_text.get_rect(center=(640, 150))
 
         # Instantiate buttons
-        play_button = Button(image=pygame.image.load("../assets/play-rect.png"), pos=(640, 360), text_input="PLAY",
+        play_button = Button(image=pygame.image.load("../assets/play-rect.png"), pos=(640, 400), text_input="PLAY",
                              font=config.get_font(75), base_color="#d7fcd4", hovering_color="White")
         
         # Draw the menu text on the screen
@@ -43,11 +43,11 @@ def main_menu():
 
         # Draw the skier and jerry images on the screen
         skier_img = pygame.image.load("../assets/skier-mike-big.png")
-        skier_rect = skier_img.get_rect(center=(200, 360))
+        skier_rect = skier_img.get_rect(center=(200, 400))
         screen.blit(skier_img, skier_rect)
 
         jerry_img = pygame.image.load("../assets/jerry-big.png")
-        jerry_rect = jerry_img.get_rect(center=(1080, 360))
+        jerry_rect = jerry_img.get_rect(center=(1080, 400))
         screen.blit(jerry_img, jerry_rect)
 
 
@@ -182,26 +182,37 @@ def play_game(user):
                 if event.key == K_ESCAPE:
                     running = False
                     main_menu()
+
+                # Deploy steezes when space bar is clicked
                 elif event.key == K_SPACE:
+                    if player.jump:
+                        pygame.time.delay(10)
+                    # Check what is in the first position of the steeze bag
                     if steeze_bag:
+
                         match steeze_bag[0]:
+                            # A 360 increases the game score by 5
                             case '360':
                                 game_score += 5
                                 steezes_bagged.append('360')
                                 steeze_bag.pop(0)
+                            # A 720 increases the game score by 10
                             case '720':
                                 game_score += 10
                                 steeze_bag.pop(0)
                             case _:
                                 pass
+
             elif event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+
             # Instantiate new enemies and add them to the enemy group
             elif event.type == ADDENEMY:
                 new_enemy = Enemy()
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
+
             # Increase the enemy spawn rate
             elif event.type == REDUCETIMER:
                 # Cancels out the previous enemy spawn event. Necessary??
@@ -211,14 +222,20 @@ def play_game(user):
                 if spawn_enemy_timer <= 200:
                     spawn_enemy_timer = 200
                 pygame.time.set_timer(ADDENEMY, spawn_enemy_timer)
+
             # Add to the game score every second
             elif event.type == ADDSCORE:
                 game_score += 1
+
             # Create new steezes
             elif event.type == ADDSTEEZE:
                 new_steeze = Steeze(steeze_input="360", font=config.get_font(20), color="#b68f40")
                 steezes.add(new_steeze)
                 all_sprites.add(new_steeze)
+
+        # Surface allows you to 'draw' to the screen
+        # Fill the screen with black
+        screen.fill((0,0,0))
 
         # Get the set of keys pressed and check for user input
         # .get_pressed() returns a dict containing all the current keydown events in the queue
@@ -230,10 +247,6 @@ def play_game(user):
 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
-
-        # Surface allows you to 'draw' to the screen
-        # Fill the screen with black
-        screen.fill((0,0,0))
 
         # Draw score on the screen
         score_text = config.get_font(20).render(f"Score: {game_score}", True, "White")
@@ -254,20 +267,33 @@ def play_game(user):
 
         # .spritecollideany() method accepts a sprite and group as parameters
         # looks at every object in the group to see if its '.rect' intersects with the '.rect' of the sprite. If so, returns TRUE
-        # Takes a callback function that determines the ratio of overlap that would determine a collision
-        # might want to use pygame.sprite.collide_mask
-        if pygame.sprite.spritecollideany(player, enemies, pygame.sprite.collide_rect_ratio(0.9)):
+        # Takes a callback function that uses the bitmap to determine collisions
+        if pygame.sprite.spritecollideany(player, enemies, pygame.sprite.collide_mask):
             # If collision occurs, remove the player sprite and exit the loop
             player.kill()
+
+            # Capture the game score and tricks used
+            # possibly await promise here
             capture_score(game_score, user)
-            # possibly insert 'await' here
             capture_tricks(steezes_bagged, user, get_last_score())
+
+            # Exit the game loop
             running = False
+
+            # Load the game over screen
             end_game(user, game_score)
+
+        # Check for collisions between player and steeze instances
         elif pygame.sprite.spritecollideany(player, steezes):
-            if len(steeze_bag) < 3:
-                for steeze in pygame.sprite.spritecollide(player, steezes, False):                
+
+            # Limit player to holding two steezes
+            if len(steeze_bag) < 2:
+                for steeze in pygame.sprite.spritecollide(player, steezes, False):
+
+                    # Add the value from the steeze instance to the steeze bag             
                     steeze_bag.append(steeze.steeze_input)
+
+                    # Remove the steeze from the game
                     steeze.kill()
 
         # Update the display with .flip()

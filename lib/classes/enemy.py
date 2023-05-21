@@ -1,5 +1,4 @@
 import pygame
-from pygame.locals import RLEACCEL
 import random
 import sys
 sys.path.append('..')
@@ -15,10 +14,12 @@ enemy_img = [tree_img, jerry_img]
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
-        self.surf = random.choice(enemy_img).convert()
-        self.surf.set_colorkey((0,0,0), RLEACCEL)
+
         # allows you to create pixel perfect masks
-        # self.image = pygame.image.load("ball_64.png").convert_alpha()
+        self.surf = random.choice(enemy_img).convert_alpha()
+
+        # Create a bitmask from the img
+        self.mask  = pygame.mask.from_surface(self.surf)
 
         # Updates rect to be a random location along the right side of the screen
         # The center is off the screen, located between 20 and 100 px off the right edge and between the top and bottom edges
@@ -28,10 +29,9 @@ class Enemy(pygame.sprite.Sprite):
                 random.randint(0, config.SCREEN_HEIGHT),
             )
         )
+
         # Set speed to a random number between specified values
         self.speed = random.randint(5, 10)
-        # self.mask  = pygame.mask.from_surface(self.surf)
-
 
     # update() takes no arguments because the movement is automatic
     # Remove the sprite when it passes the left edge of the screen with .kil()
